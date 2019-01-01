@@ -19,4 +19,7 @@ https://learnopengl.com/Getting-started/Creating-a-window
 ## Window
 - register callback function:
 	- after creating the window and before the game loop is initiated
+- screen clear
+	- `glClearColor` is a state-setting functio
+	- `glClear` is a state-using function in that it uses the current state to retrieve the clearing color from.
 	

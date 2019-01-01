@@ -3,6 +3,7 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 
 int main()
 {
@@ -36,6 +37,14 @@ int main()
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
+		processInput(window); // close window when ESCAPE key is pressed
+
+		// clear the screen
+		glClearColor(0.4f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//TODO:: rendering commands
+
 		glfwSwapBuffers(window); //double buffer to avoid flicker
 		glfwPollEvents(); //checks if any events are triggered
 	}
@@ -48,4 +57,11 @@ int main()
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+// input
+void processInput(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }
