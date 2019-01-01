@@ -14,4 +14,9 @@ https://learnopengl.com/Getting-started/Creating-a-window
   - allows us to create an OpenGL context, define window parameters and handle user input
 - GLAD:
   - retrive graphics driver related info
+- [linker errors](https://stackoverflow.com/questions/31736361/visual-studio-2015-gives-me-errors-upon-creating-a-simple-test-console-program)
 
+## Window
+- register callback function:
+	- after creating the window and before the game loop is initiated
+	
