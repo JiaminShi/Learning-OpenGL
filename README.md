@@ -42,10 +42,9 @@ https://learnopengl.com/Getting-started/Creating-a-window
 -  geometry shader
 	-  input:  a collection of vertices 
 	-  generate other shapes by emitting new vertices to form new (or other) primitive(s)
-- rasterization stage
+- rasterization stage (光栅)
 	- maps the resulting primitive(s) to the corresponding pixels on the final screen
--  Clipping
-	-   discards all fragments that are outside your view, increasing performance
+	-  Clipping: discards all fragments that are outside your view, increasing performance
 -  **fragment shader**
 	-  **fragment** is all the data required for OpenGL to render a single pixel.
 	-   calculate the final color of a pixel 
@@ -131,3 +130,29 @@ repeat this process every time we want to draw an object.
 
 ### Element Buffer Objects
 -  indexed drawing: rectangle
+- The glDrawElements function takes its indices from the EBO currently bound to the GL_ELEMENT_ARRAY_BUFFER target. This means we have to bind the corresponding EBO each time we want to render an object with indices 
+
+#### Summary
+
+	// ..:: Initialization code :: ..
+	// 1. bind Vertex Array Object
+	glBindVertexArray(VAO);
+	// 2. copy our vertices array in a vertex buffer for OpenGL to use
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 3. copy our index array in a element buffer for OpenGL to use
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// 4. then set the vertex attributes pointers
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);  
+
+	[...]
+  
+	// ..:: Drawing code (in render loop) :: ..
+	glUseProgram(shaderProgram);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
+	// mode, the count or number of elements we'd like to draw, type of the indices, 
+	// The last argument allows us to specify an offset in the EBO (or pass in an index array, but that is when you're not using element buffer objects)
+	glBindVertexArray(0);
