@@ -54,42 +54,22 @@ int main()
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSourceCode, NULL);
 	glCompileShader(vertexShader);
-
-	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
+	//TOOD:: check for shader compile errors
 
 	// fragment shader
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSourceCode, NULL);
 	glCompileShader(fragmentShader);
+	//TOOD:: check for shader compile errors
 
-	// check for shader compile errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
 
 	// link shaders
 	unsigned int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
-	// check for linking errors
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
+	//TOOD:: check for linking errors
 
 	// delete compiled shader after link
 	glDeleteShader(vertexShader);
@@ -103,18 +83,30 @@ int main()
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
-		0.0f,  0.5f, 0.0f
+		0.0f,  0.5f, 0.0f,
+		0.8f,  0.5f, 0.0f
 	};
 
-	// VBO & VAO
-	unsigned int VBO, VAO;
+	int indices[] = {
+		0, 1, 2,
+		1, 2, 3
+	};
+
+	// VBO & VAO & EBO
+	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO); // bind object to state
+	glGenBuffers(1, &VBO); 
+	glGenBuffers(1, &EBO);
 	
 	glBindVertexArray(VAO);
 
+	// <----------- VBO ------------>
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind object to state
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //copy user-defined data into the currently bound buffer 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // copy user-defined data into the currently bound buffer 
+
+	// <---------- EBO ------------->
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// link vertex attributes (details in docs)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -123,10 +115,6 @@ int main()
 	// unbind
 	// glVertexAttribPointer registered VBO, which means the vertex attribute is bound vertex buffer object
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-
-
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
@@ -140,7 +128,9 @@ int main()
 		// rendering triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
 
 		glfwSwapBuffers(window); //double buffer to avoid flicker
 		glfwPollEvents(); //checks if any events are triggered
@@ -159,6 +149,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // input
 void processInput(GLFWwindow *window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true); 
+	}
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	}
 }
